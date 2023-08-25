@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name='viewport'
+    content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' />
+  <meta name="description" content="">
+  <meta name="author" content="Techgrowth">
+
+  <title>Encrypt with Key</title>
+  <!-- Bootstrap core CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9"
+    crossorigin="anonymous">
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <link rel="stylesheet" href="/style.css">
+
+  <style>
+    .custom-form,
+    .resultbox {
+      width: 30%;
+    }
+
+    @media (max-width: 768px) {
+
+      .custom-form,
+      .resultbox {
+        width: 90% !important;
+      }
+    }
+
+    @media (min-width: 768px) and (max-width: 1024px) {
+
+      .custom-form,
+      .resultbox {
+        width: 40% !important;
+      }
+    }
+  </style>
+
+</head>
+<body>
+
+  <Main>
+    <div
+      class="d-flex flex-column bg-dark justify-content-center align-items-center"
+      style="height: 100vh !important;">
+      <h1 class="text-light mb-4">Encrypt text with key</h1>
+
+      <!-- form -->
+      <div class="card bg-light p-4 mb-4 custom-form"
+        style="border-radius: 30px;">
+        <div class="row">
+          <div class="col-12 mb-3">
+            <input type="text" class="form-control rounded-pill"
+              placeholder="PlainText" id="plainText">
+          </div>
+          <div class="col-12 mb-3">
+            <input type="text" class="form-control rounded-pill"
+              placeholder="Key" id="key">
+          </div>
+          <div class="col-12 text-center">
+            <button class="btn btn-secondary rounded-pill"
+              id="submit">Submit</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- result box -->
+      <div class="alert alert-warning d-none resultbox" id="result-box">
+        <div class="w-100 text-end">
+          <span role="button" id="reset-btn">
+            <i class="fa-solid fa-arrows-rotate"></i>
+          </span>
+        </div>
+        <p class="mb-0">Encrypted text:</p>
+        <p class="">
+          <span id="textToCopy" class="text-danger"
+            style="margin-right: 1rem;">skdjfhksadjhf</span>
+          <span><i id="copyText" data-clipboard-target="#textToCopy"
+              class="fa-regular fa-copy" role="button"></i></span>
+        </p>
+
+        <p class="mb-0">Your Key:</p>
+        <p>
+          <span id="keyToCopy" class="text-danger"
+            style="margin-right: 1rem;">Home</span>
+          <span><i id="copyKey" data-clipboard-target="#keyToCopy"
+              class="fa-regular fa-copy" role="button"></i></span>
+        </p>
+        <p class="mb-0">Original:</p>
+        <p>
+          <span id="ogToCopy" class="text-danger"
+            style="margin-right: 1rem;">og</span>
+          <span><i id="copyOg" data-clipboard-target="#ogToCopy"
+              class="fa-regular fa-copy" role="button"></i></span>
+        </p>
+      </div>
+
+    </div>
+  </Main>
+
+
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"
+    integrity="sha512-3gJwYpMe3QewGELv8k/BX9vcqhryRdzRMxVfq6ngyWXwo03GFEzjsUm8Q7RZcHPHksttq7/GFoxjCVUjkjvPdw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+    crossorigin="anonymous"></script>
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
+
+  <!-- Validate -->
+  <script>
+    $(document).ready(function () {
+      new ClipboardJS('#copyText');
+      new ClipboardJS('#copyKey');
+      new ClipboardJS('#copyOg');
+      $('#submit').prop("disabled", true);
+
+      const plainTextInput = $('#plainText');
+      const keyInput = $('#key');
+      const encryptedText = $('#textToCopy');
+      const retrievedKey = $('#keyToCopy')
+      const ogText = $('#ogToCopy');
+      const resultBox = $('#result-box');
+
+      $("#submit").click(function () {
+        if (plainTextInput.val() != "" && keyInput.val() != "") {
+          const enText = encryptWithKey(plainTextInput.val(), keyInput.val());
+          const dyText = decryptWithKey(enText, keyInput.val());
+          encryptedText.text(enText);
+          retrievedKey.text(keyInput.val());
+          ogText.text(dyText);
+          resultBox.removeClass('d-none')
+        }
+        plainTextInput.val("");
+        keyInput.val("");
+      });
+
+
+      $("#reset-btn").click(function () {
+
+        encryptedText.text("");
+        retrievedKey.text("");
+        ogText.text("");
+        resultBox.addClass('d-none')
+      });
+
+      $('#plainText, #key').on('change', function () {
+        if (plainTextInput.val() === '' || keyInput.val() === '') {
+          $('#submit').prop("disabled", true);
+          $('#submit').removeClass('btn-info');
+          $('#submit').addClass('btn-secondary');
+
+        } else {
+          $('#submit').prop("disabled", false);
+          $('#submit').removeClass('btn-secondary');
+          $('#submit').addClass('btn-info');
+        }
+      });
+
+      // encrypt code
+
+      function encryptWithKey(plaintext, key) {
+        const alphabet = "/:abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        let encryptedText = '';
+
+        for (let i = 0; i < plaintext.length; i++) {
+          const char = plaintext[i];
+          const charIndex = alphabet.indexOf(char);
+
+          if (charIndex !== -1) {
+            const keyChar = key[i % key.length];
+            const keyIndex = alphabet.indexOf(keyChar);
+            const newIndex = (charIndex + keyIndex) % alphabet.length;
+            encryptedText += alphabet[newIndex];
+          } else {
+            encryptedText += char;
+          }
+        }
+
+        return encryptedText;
+      }
+
+      // dycrpt code
+
+      function decryptWithKey(encryptedText, key) {
+        const alphabet = "/:abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        let decryptedText = '';
+
+        for (let i = 0; i < encryptedText.length; i++) {
+          const char = encryptedText[i];
+          const charIndex = alphabet.indexOf(char);
+
+          if (charIndex !== -1) {
+            const keyChar = key[i % key.length];
+            const keyIndex = alphabet.indexOf(keyChar);
+            const newIndex = (charIndex - keyIndex + alphabet.length) % alphabet.length;
+            decryptedText += alphabet[newIndex];
+          } else {
+            decryptedText += char;
+          }
+        }
+
+        return decryptedText;
+      }
+
+    });
+  </script>
+
+</body>
+</html>
