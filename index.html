@@ -144,6 +144,9 @@
         }
         plainTextInput.val("");
         keyInput.val("");
+        $('#submit').prop("disabled", true);
+        $('#submit').removeClass('btn-info');
+        $('#submit').addClass('btn-secondary');
       });
 
 
@@ -153,6 +156,9 @@
         retrievedKey.text("");
         ogText.text("");
         resultBox.addClass('d-none')
+        $('#submit').prop("disabled", true);
+        $('#submit').removeClass('btn-info');
+        $('#submit').addClass('btn-secondary');
       });
 
       $('#plainText, #key').on('change', function () {
